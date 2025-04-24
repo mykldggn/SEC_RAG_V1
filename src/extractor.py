@@ -5,7 +5,6 @@ import openai
 import json
 from typing import Dict, Any, List
 from .config import OPENAI_CHAT_MODEL, FEATURES
-
 FUNCTIONS = [
     {
         "name": "extract_fields",
@@ -40,9 +39,7 @@ FUNCTIONS = [
         }
     }
 ]
-
 def extract_fields(chunks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    # Construct messages
     messages = [
         {"role": "system", "content": "You are an assistant that extracts structured data from SEC filings."},
         {"role": "assistant", "content": f"Schema for extraction: {json.dumps(FEATURES)}"},
@@ -50,7 +47,6 @@ def extract_fields(chunks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     ]
     for chunk in chunks:
         messages.append({"role": "assistant", "content": chunk.get("text", "")})
-
     resp = openai.ChatCompletion.create(
         model=OPENAI_CHAT_MODEL,
         messages=messages,

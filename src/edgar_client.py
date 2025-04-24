@@ -4,7 +4,6 @@ Download and parse SEC filings via HTML scraping of EDGAR browse & index pages.
 import requests
 from bs4 import BeautifulSoup
 from .config import EDGAR_USER_AGENT
-
 class EdgarClient:
     def __init__(self, user_agent: str = None):
         self.user_agent = user_agent or EDGAR_USER_AGENT
@@ -52,7 +51,6 @@ class EdgarClient:
                 if len(cols) < 4:
                     continue
                 dtype = cols[0].get_text(strip=True)
-                # only include rows whose Type starts with our ftype
                 if not dtype.upper().startswith(ftype.upper()):
                     continue
 
@@ -61,7 +59,6 @@ class EdgarClient:
                 accession = link.split("/")[-1].replace("-index.html", "")
 
                 index_url = self.base_url + link
-                # now fetch the index page to find the actual document link
                 iresp = requests.get(index_url, headers=headers)
                 iresp.raise_for_status()
                 isoup = BeautifulSoup(iresp.text, "html.parser")
@@ -70,7 +67,6 @@ class EdgarClient:
                 if not ftable:
                     continue
 
-                # grab the first <a> in the file table (the primary HTML)
                 doc_row = ftable.find_all("tr")[1]
                 doc_href = doc_row.find("a")["href"]
                 doc_url  = self.base_url + doc_href
